@@ -109,6 +109,6 @@ app.post("/api/analyze", async (req, res) => {
   }
 });
 
-app.listen(port, () => {
-  console.log(`AI保障顧問已啟動：http://localhost:${port}`);
+app.listen(port, "0.0.0.0", () => {
+    console.log(`AI保險顧問已啟動：http://localhost:${port}`);
 });
