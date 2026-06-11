@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI保障顧問</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell">
+    <section class="hero">
+      <div class="hero-copy">
+        <p class="eyebrow">AI Protection Advisor</p>
+        <h1>AI保障顧問</h1>
+        <p class="intro">填寫基本資料後，AI 顧問會依你的狀況整理人生階段、主要風險與建議保障方向。</p>
+      </div>
+      <div class="hero-panel" aria-label="保障摘要">
+        <span class="status-dot"></span>
+        <div>
+          <strong>AI 顧問模式</strong>
+          <p>已串接 GPT，提供初步保障分析。</p>
+        </div>
+      </div>
+    </section>
+
+    <section class="workspace" aria-label="AI保障顧問分析工具">
+      <form class="advisor-form" id="advisorForm">
+        <div class="section-heading">
+          <p>Step 01</p>
+          <h2>基本資料</h2>
+        </div>
+
+        <label class="field">
+          <span>年齡</span>
+          <input type="number" id="age" min="18" max="90" value="35" required>
+        </label>
+
+        <label class="field">
+          <span>年收入</span>
+          <input type="number" id="income" min="0" step="10000" value="900000" required>
+        </label>
+
+        <label class="field">
+          <span>婚姻狀況</span>
+          <select id="maritalStatus">
+            <option value="single">未婚</option>
+            <option value="married" selected>已婚</option>
+            <option value="other">其他</option>
+          </select>
+        </label>
+
+        <label class="switch-field">
+          <span>是否有小孩</span>
+          <input type="checkbox" id="hasChildren" checked>
+          <span class="switch" aria-hidden="true"></span>
+        </label>
+
+        <button class="primary-button" type="submit">開始分析</button>
+      </form>
+
+      <section class="advisor-chat" aria-label="AI保障顧問分析區">
+        <div class="chat-header">
+          <div>
+            <p>Step 02</p>
+            <h2>AI 顧問分析</h2>
+          </div>
+          <span>GPT</span>
+        </div>
+
+        <div class="chat-window" id="chatWindow" aria-live="polite">
+          <div class="empty-state" id="emptyState">
+            <div class="assistant-mark">AI</div>
+            <h3>先填寫左側資料，開始你的保障諮詢。</h3>
+            <p>開始分析後，我會整理人生階段、主要風險與建議保障方向。</p>
+            <div class="prompt-list" aria-label="分析重點">
+              <span>人生階段</span>
+              <span>主要風險</span>
+              <span>保障方向</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    </section>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
