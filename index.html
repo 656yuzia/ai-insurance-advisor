@@ -12,72 +12,225 @@
       <div class="hero-copy">
         <p class="eyebrow">AI Protection Advisor</p>
         <h1>AI保障顧問</h1>
-        <p class="intro">填寫基本資料後，AI 顧問會依你的狀況整理人生階段、主要風險與建議保障方向。</p>
+        <p class="intro">用幾個低壓力問題，讓 AI 先幫你整理人生階段、主要風險與保障方向。</p>
       </div>
-      <div class="hero-panel" aria-label="保障摘要">
+      <div class="hero-status" aria-label="AI 顧問狀態">
         <span class="status-dot"></span>
         <div>
-          <strong>AI 顧問模式</strong>
-          <p>已串接 GPT，提供初步保障分析。</p>
+          <strong>GPT 分析已啟用</strong>
+          <p>回答會優先參考你的 ai-brain 顧問知識庫。</p>
         </div>
       </div>
     </section>
 
-    <section class="workspace" aria-label="AI保障顧問分析工具">
-      <form class="advisor-form" id="advisorForm">
-        <div class="section-heading">
-          <p>Step 01</p>
-          <h2>基本資料</h2>
+    <section class="flow" aria-label="AI 保障顧問流程">
+      <form class="flow-card step-card is-active" id="advisorForm">
+        <div class="step-header">
+          <div>
+            <p>STEP 1</p>
+            <h2>基本資料</h2>
+          </div>
+          <span class="step-badge">現在</span>
         </div>
 
-        <label class="field">
-          <span>年齡</span>
-          <input type="number" id="age" min="18" max="90" value="35" required>
-        </label>
+        <div class="form-grid">
+          <label class="field">
+            <span>年齡</span>
+            <input type="number" id="age" min="18" max="90" value="35" required>
+          </label>
 
-        <label class="field">
-          <span>年收入</span>
-          <input type="number" id="income" min="0" step="10000" value="900000" required>
-        </label>
+          <label class="field">
+            <span>婚姻狀況</span>
+            <select id="maritalStatus" required>
+              <option value="single">未婚</option>
+              <option value="married" selected>已婚</option>
+              <option value="other">其他</option>
+            </select>
+          </label>
 
-        <label class="field">
-          <span>婚姻狀況</span>
-          <select id="maritalStatus">
-            <option value="single">未婚</option>
-            <option value="married" selected>已婚</option>
-            <option value="other">其他</option>
-          </select>
-        </label>
+          <label class="field">
+            <span>是否有小孩</span>
+            <select id="hasChildren" required>
+              <option value="yes" selected>是</option>
+              <option value="no">否</option>
+            </select>
+          </label>
 
-        <label class="switch-field">
-          <span>是否有小孩</span>
-          <input type="checkbox" id="hasChildren" checked>
-          <span class="switch" aria-hidden="true"></span>
-        </label>
+          <label class="field">
+            <span>職業</span>
+            <input type="text" id="occupation" placeholder="例如：工程師、老師、護理師、自營商、學生" required>
+          </label>
+
+          <label class="field">
+            <span>年收入</span>
+            <input type="number" id="income" min="0" step="10000" value="900000" required>
+          </label>
+        </div>
+
+        <details class="advanced-panel">
+          <summary>
+            <span>進階資料（選填）</span>
+            <small>讓 AI 分析更貼近你的責任與預算</small>
+          </summary>
+
+          <div class="form-grid advanced-grid">
+            <label class="field">
+              <span>是否為家庭主要收入來源</span>
+              <select id="incomeRole">
+                <option value="primary" selected>是</option>
+                <option value="not_primary">否</option>
+                <option value="shared">共同負擔</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>是否有長期貸款</span>
+              <select id="longTermLoan">
+                <option value="none" selected>無</option>
+                <option value="mortgage">房貸</option>
+                <option value="car_loan">車貸</option>
+                <option value="mortgage_and_car_loan">房貸＋車貸</option>
+                <option value="other">其他</option>
+              </select>
+            </label>
+
+            <label class="field">
+              <span>每月保費預算</span>
+              <select id="premiumBudget">
+                <option value="under_1000">1000元以下</option>
+                <option value="1000_3000" selected>1000～3000元</option>
+                <option value="3000_5000">3000～5000元</option>
+                <option value="over_5000">5000元以上</option>
+              </select>
+            </label>
+
+            <label class="field field-wide">
+              <span>補充說明</span>
+              <textarea id="additionalInfo" rows="6" placeholder="請補充任何你認為重要的資訊，例如：
+家庭狀況、房貸壓力、未來規劃、創業、準備結婚、準備生小孩、想特別了解的保障。
+
+填得越完整，AI 分析會越貼近你的情況。"></textarea>
+            </label>
+          </div>
+        </details>
 
         <button class="primary-button" type="submit">開始分析</button>
       </form>
 
-      <section class="advisor-chat" aria-label="AI保障顧問分析區">
-        <div class="chat-header">
+      <section class="flow-card step-card result-card" aria-label="AI 初步分析">
+        <div class="step-header">
           <div>
-            <p>Step 02</p>
-            <h2>AI 顧問分析</h2>
+            <p>STEP 2</p>
+            <h2>AI 初步分析</h2>
           </div>
-          <span>GPT</span>
+          <span class="step-badge">GPT</span>
         </div>
 
-        <div class="chat-window" id="chatWindow" aria-live="polite">
+        <div class="result-window" id="chatWindow" aria-live="polite">
           <div class="empty-state" id="emptyState">
             <div class="assistant-mark">AI</div>
-            <h3>先填寫左側資料，開始你的保障諮詢。</h3>
-            <p>開始分析後，我會整理人生階段、主要風險與建議保障方向。</p>
+            <h3>填寫資料後，AI 將協助整理人生階段、主要風險與保障方向。</h3>
             <div class="prompt-list" aria-label="分析重點">
               <span>人生階段</span>
               <span>主要風險</span>
               <span>保障方向</span>
             </div>
           </div>
+        </div>
+      </section>
+
+      <section class="flow-card step-card step-section" id="gapCheckSection" aria-label="保障缺口自我檢查" hidden>
+        <div class="step-header">
+          <div>
+            <p>STEP 3</p>
+            <h2>保障缺口自我檢查</h2>
+          </div>
+          <span class="step-badge">自我檢查</span>
+        </div>
+
+        <p class="step-description">
+          根據剛剛的初步分析，接下來可以快速檢查你是否已具備幾項重要保障。如果你不確定，也可以直接選「不確定」，這很常見，代表後續很適合做一次保單健檢。
+        </p>
+
+        <form id="gapCheckForm" class="gap-check-form">
+          <fieldset class="gap-item">
+            <legend>醫療保障</legend>
+            <p>如果住院、手術或自費醫療費用發生時，你是否有保險可以協助負擔？</p>
+            <div class="choice-group">
+              <label><input type="radio" name="medical" value="yes" required> 有</label>
+              <label><input type="radio" name="medical" value="no"> 沒有</label>
+              <label><input type="radio" name="medical" value="unsure"> 不確定</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="gap-item">
+            <legend>重大疾病保障</legend>
+            <p>如果罹患癌症、重大傷病或需要長時間治療，你是否有一次性給付的保障可以支應收入中斷與照護支出？</p>
+            <div class="choice-group">
+              <label><input type="radio" name="criticalIllness" value="yes" required> 有</label>
+              <label><input type="radio" name="criticalIllness" value="no"> 沒有</label>
+              <label><input type="radio" name="criticalIllness" value="unsure"> 不確定</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="gap-item">
+            <legend>家庭責任保障</legend>
+            <p>如果你因疾病或意外無法繼續提供收入，家人是否仍有足夠的生活費、房貸、教育費或其他必要支出來源？</p>
+            <div class="choice-group">
+              <label><input type="radio" name="familyResponsibility" value="yes" required> 有</label>
+              <label><input type="radio" name="familyResponsibility" value="no"> 沒有</label>
+              <label><input type="radio" name="familyResponsibility" value="unsure"> 不確定</label>
+            </div>
+          </fieldset>
+
+          <fieldset class="gap-item">
+            <legend>長照／失能保障</legend>
+            <p>如果未來因疾病、意外或老化需要長期照顧，是否有相關保障可以減輕自己與家人的照顧壓力？</p>
+            <div class="choice-group">
+              <label><input type="radio" name="longTermCare" value="yes" required> 有</label>
+              <label><input type="radio" name="longTermCare" value="no"> 沒有</label>
+              <label><input type="radio" name="longTermCare" value="unsure"> 不確定</label>
+            </div>
+          </fieldset>
+        </form>
+      </section>
+
+      <section class="flow-card step-card step-section" id="gapResultSection" aria-label="AI 整理缺口結果" hidden>
+        <div class="step-header">
+          <div>
+            <p>STEP 4</p>
+            <h2>AI 整理缺口結果</h2>
+          </div>
+          <span class="step-badge">GPT</span>
+        </div>
+
+        <button class="primary-button" id="summarizeGapsButton" type="button" disabled>整理缺口結果</button>
+        <div class="result-window gap-result-window" id="gapResultWindow" aria-live="polite"></div>
+      </section>
+
+      <section class="flow-card step-card step-section booking-section" id="bookingSection" aria-label="預約陳奕丞保單健檢" hidden>
+        <div class="step-header">
+          <div>
+            <p>STEP 5</p>
+            <h2>預約陳奕丞保單健檢</h2>
+          </div>
+          <span class="step-badge">下一步</span>
+        </div>
+
+        <p class="step-description">
+          AI 可以協助你做初步整理，但真正的保單內容仍需要逐項確認。如果你不確定自己目前有哪些保障，或想知道現有保單是否真的補到風險缺口，可以預約陳奕丞協助你做保單健檢。
+        </p>
+
+        <div class="booking-actions">
+          <a class="booking-link" data-contact-link="line" href="https://line.me/R/ti/p/@your-line-id" target="_blank" rel="noopener noreferrer">
+            <span>LINE 諮詢</span>
+          </a>
+          <a class="booking-link" data-contact-link="instagram" href="https://www.instagram.com/your-instagram" target="_blank" rel="noopener noreferrer">
+            <span>Instagram</span>
+          </a>
+          <a class="booking-link" data-contact-link="booking" href="https://forms.gle/your-form-link" target="_blank" rel="noopener noreferrer">
+            <span>預約保單健檢</span>
+          </a>
         </div>
       </section>
     </section>
