@@ -56,6 +56,8 @@ function applyContactLinks() {
 }
 
 function getProfile() {
+  const currentMonthlyPremium = document.querySelector("#premiumBudget").value;
+
   return {
     age: Number(document.querySelector("#age").value),
     gender: "prefer_not_to_say",
@@ -65,8 +67,8 @@ function getProfile() {
     income: Number(document.querySelector("#income").value),
     incomeRole: document.querySelector("#incomeRole").value,
     longTermLoan: document.querySelector("#longTermLoan").value,
-    premiumBudget: document.querySelector("#premiumBudget").value,
-    coverageLevel: "unsure",
+    currentMonthlyPremium,
+    premiumBudget: currentMonthlyPremium,
     additionalInfo: document.querySelector("#additionalInfo").value.trim()
   };
 }

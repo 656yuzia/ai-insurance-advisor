@@ -10,15 +10,15 @@
   <main class="app-shell">
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">AI Protection Advisor</p>
+        <p class="eyebrow">AI PROTECTION ADVISOR BY 陳奕丞</p>
         <h1>AI保障顧問</h1>
-        <p class="intro">用幾個低壓力問題，讓 AI 先幫你整理人生階段、主要風險與保障方向。</p>
+        <p class="intro">免費初步保障分析</p>
       </div>
       <div class="hero-status" aria-label="AI 顧問狀態">
         <span class="status-dot"></span>
         <div>
-          <strong>GPT 分析已啟用</strong>
-          <p>回答會優先參考你的 ai-brain 顧問知識庫。</p>
+          <strong>已串接 GPT API</strong>
+          <p>資料只用於本次 AI 初步分析，不會公開，也不代表正式投保建議</p>
         </div>
       </div>
     </section>
@@ -63,21 +63,25 @@
 
           <label class="field">
             <span>年收入</span>
-            <input type="number" id="income" min="0" step="10000" value="900000" required>
+            <input type="number" id="income" min="0" step="10000" value="600000" required>
           </label>
         </div>
 
         <details class="advanced-panel">
           <summary>
-            <span>進階資料（選填）</span>
-            <small>讓 AI 分析更貼近你的責任與預算</small>
+            <div>
+              <span>進階資料（選填）</span>
+              <br>
+              <small>讓 AI 分析更貼近您的真實情況</small>
+            </div>
           </summary>
 
           <div class="form-grid advanced-grid">
             <label class="field">
               <span>是否為家庭主要收入來源</span>
               <select id="incomeRole">
-                <option value="primary" selected>是</option>
+                <option value="" selected>可略過</option>
+                <option value="primary">是</option>
                 <option value="not_primary">否</option>
                 <option value="shared">共同負擔</option>
               </select>
@@ -86,7 +90,8 @@
             <label class="field">
               <span>是否有長期貸款</span>
               <select id="longTermLoan">
-                <option value="none" selected>無</option>
+                <option value="" selected>可略過</option>
+                <option value="none">無</option>
                 <option value="mortgage">房貸</option>
                 <option value="car_loan">車貸</option>
                 <option value="mortgage_and_car_loan">房貸＋車貸</option>
@@ -95,12 +100,13 @@
             </label>
 
             <label class="field">
-              <span>每月保費預算</span>
+              <span>目前每月已繳保費</span>
               <select id="premiumBudget">
-                <option value="under_1000">1000元以下</option>
-                <option value="1000_3000" selected>1000～3000元</option>
-                <option value="3000_5000">3000～5000元</option>
-                <option value="over_5000">5000元以上</option>
+                <option value="" selected>可略過</option>
+                <option value="under_2000">2000元以下</option>
+                <option value="2000_4000">2000～4000元</option>
+                <option value="4000_6000">4000～6000元</option>
+                <option value="over_6000">6000元以上</option>
               </select>
             </label>
 
@@ -121,7 +127,7 @@
         <div class="step-header">
           <div>
             <p>STEP 2</p>
-            <h2>AI 初步分析</h2>
+            <h2>AI 初步保障分析</h2>
           </div>
           <span class="step-badge">GPT</span>
         </div>
@@ -149,13 +155,13 @@
         </div>
 
         <p class="step-description">
-          根據剛剛的初步分析，接下來可以快速檢查你是否已具備幾項重要保障。如果你不確定，也可以直接選「不確定」，這很常見，代表後續很適合做一次保單健檢。
+          根據剛剛的初步分析，接下來可以快速檢查您是否已具備幾項重要保障。如果您不確定，也可以直接選「不確定」，這很常見，代表後續很適合做一次保單健檢。
         </p>
 
         <form id="gapCheckForm" class="gap-check-form">
           <fieldset class="gap-item">
             <legend>醫療保障</legend>
-            <p>如果住院、手術或自費醫療費用發生時，你是否有保險可以協助負擔？</p>
+            <p>如果住院、手術或自費醫療費用發生時，您是否有保險可以協助負擔？</p>
             <div class="choice-group">
               <label><input type="radio" name="medical" value="yes" required> 有</label>
               <label><input type="radio" name="medical" value="no"> 沒有</label>
@@ -165,7 +171,7 @@
 
           <fieldset class="gap-item">
             <legend>重大疾病保障</legend>
-            <p>如果罹患癌症、重大傷病或需要長時間治療，你是否有一次性給付的保障可以支應收入中斷與照護支出？</p>
+            <p>如果罹患癌症、重大傷病或需要長時間治療，您是否有一次性給付的保障可以支應收入中斷與照護支出？</p>
             <div class="choice-group">
               <label><input type="radio" name="criticalIllness" value="yes" required> 有</label>
               <label><input type="radio" name="criticalIllness" value="no"> 沒有</label>
@@ -175,7 +181,7 @@
 
           <fieldset class="gap-item">
             <legend>家庭責任保障</legend>
-            <p>如果你因疾病或意外無法繼續提供收入，家人是否仍有足夠的生活費、房貸、教育費或其他必要支出來源？</p>
+            <p>如果您因疾病或意外無法繼續提供收入，家人是否仍有足夠的生活費、房貸、教育費或其他必要支出來源？</p>
             <div class="choice-group">
               <label><input type="radio" name="familyResponsibility" value="yes" required> 有</label>
               <label><input type="radio" name="familyResponsibility" value="no"> 沒有</label>
@@ -199,7 +205,7 @@
         <div class="step-header">
           <div>
             <p>STEP 4</p>
-            <h2>AI 整理缺口結果</h2>
+            <h2>AI 整理您的保障缺口</h2>
           </div>
           <span class="step-badge">GPT</span>
         </div>
