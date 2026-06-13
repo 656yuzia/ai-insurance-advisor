@@ -145,6 +145,14 @@ function gapAnswerText(value) {
   });
 }
 
+function extractAiSummary(text) {
+  const match = String(text || "").match(
+    /(?:^|\n)\s*【?\s*AI\s*總結\s*】?\s*\n([\s\S]*?)(?=\n\s*【?\s*(為什麼建議保單健檢|下一步建議)\s*】?\s*\n|$)/
+  );
+
+  return match ? match[1].trim() : "";
+}
+
 function readMarkdownFile(fileName) {
   const filePath = path.join(brainDir, fileName);
   const content = fs.readFileSync(filePath, "utf8").trim();
@@ -338,21 +346,21 @@ ${analyzeProfileLines.join("\n")}
 【人生階段】
 根據使用者提供的資料，做初步人生階段判斷。
 請寫 2～3 句，語氣自然，不要太長，不要太壓迫。
-要根據使用者的年齡、婚姻狀況、是否有小孩、職業、年收入、是否為家庭主要收入來源、是否有長期貸款、目前每月已繳保費等資料去判斷。
+要根據使用者的年齡、婚姻狀況、是否有小孩、職業、年收入、家庭責任、是否為家庭主要收入來源、是否有長期貸款、目前每月已繳保費，以及補充說明去判斷。
 如果進階資料沒有填，就不要硬推論。
 語氣可以接近：「35 歲、已婚且有小孩，代表目前家庭責任正在增加。若您同時是家庭主要收入來源，收入中斷與醫療支出對家庭現金流的影響會比較明顯。這個階段可以先確認醫療、收入中斷與家庭責任相關保障是否清楚。」
 
 【主要風險】
-列出 3 點。
+列出 2～3 點。
 每點 1～2 句。
-要根據使用者資料判斷，不要太罐頭。
+要結合基本資料與補充說明判斷，不要太罐頭。
 可從收入中斷風險、醫療支出風險、家庭責任風險、長照/失能風險、職業或運動相關風險等方向，依照使用者狀況挑最適合的 3 點。
 
 【優先確認的保障】
-列出 3 點。
+列出 2～3 點。
 語氣要是「優先確認」，不要直接說使用者一定缺保障。
 每點 1～2 句。
-可以提到醫療、重大疾病、壽險/家庭責任、失能/長照、緊急預備金等方向，但請依使用者狀況取捨。
+可以提到醫療、重大疾病、壽險/家庭責任、失能/長照、緊急預備金、公司團保或既有保單整理等方向，但請依使用者資料與補充說明取捨。
 
 【重要提醒】
 用 1～2 句話提醒：這只是初步分析，不代表正式投保建議，實際保障內容仍需依保單條款、額度與健康告知確認。
@@ -366,6 +374,11 @@ ${analyzeProfileLines.join("\n")}
 - 進階資料為選填。若使用者未填寫進階資料，請不要主動提到未填寫、未提供、資料不足或建議補上；只根據已提供的資料做初步整理。
 - 若使用者資料清單沒有出現是否為家庭主要收入來源、是否有長期貸款、目前每月已繳保費或補充說明，就不要提到尚未填寫、未提供、建議補上、資料不足、主要收入來源不明、貸款不明或每月保費不明。
 - 只有使用者有填進階資料時，才可以把那些資料納入分析。
+- 補充說明是使用者主動提供的背景資料，優先級高於一般推測。只要補充說明有內容，請務必閱讀並納入分析，不可以忽略。
+- 補充說明可能包含家庭狀況、收入穩定性、公司團保、既有保單、貸款壓力、固定支出、未來規劃、退休金或其他現金流、照顧責任、健康狀況、預算壓力，或其他使用者認為重要的資訊。
+- 如果補充說明有內容，不需要逐字重複，也不要生硬地一直寫「根據您的補充說明」，但至少要在【人生階段】、【主要風險】或【優先確認的保障】其中一個區塊自然反映其意思。
+- 如果補充說明與基本資料有關聯，請整合判斷；如果補充說明與基本資料看起來有衝突，不要直接否定使用者，請溫和提醒後續可再確認。
+- 如果補充說明是空白，不要提到「未填寫」、「未提供」、「資料不足」或「建議補上」。
 - 不得推論使用者曾做過保障程度評估。
 - 不得使用 Markdown 粗體符號。
 - 不得輸出 ** 符號。
@@ -432,6 +445,31 @@ app.post("/api/check-gaps", async (req, res) => {
     const yesCount = payload.gapAnswers.filter((item) => item.answer === "yes").length;
     const noCount = payload.gapAnswers.filter((item) => item.answer === "no").length;
     const unsureCount = payload.gapAnswers.filter((item) => item.answer === "unsure").length;
+    const checkGapProfileLines = [
+      `- 年齡：${payload.profile.age} 歲`,
+      `- 性別：${genderText(payload.profile.gender)}`,
+      `- 婚姻狀況：${maritalStatusText(payload.profile.maritalStatus)}`,
+      `- 是否有小孩：${payload.profile.hasChildren ? "有" : "沒有"}`,
+      `- 職業：${payload.profile.occupation}`,
+      `- 年收入：新台幣 ${payload.profile.income.toLocaleString("zh-TW")} 元`
+    ];
+
+    if (payload.profile.incomeRole) {
+      checkGapProfileLines.push(`- 是否為家庭主要收入來源：${incomeRoleText(payload.profile.incomeRole)}`);
+    }
+
+    if (payload.profile.longTermLoan) {
+      checkGapProfileLines.push(`- 是否有長期貸款：${longTermLoanText(payload.profile.longTermLoan)}`);
+    }
+
+    if (payload.profile.currentMonthlyPremium) {
+      checkGapProfileLines.push(`- 目前每月已繳保費：${currentMonthlyPremiumText(payload.profile.currentMonthlyPremium)}`);
+    }
+
+    if (payload.profile.additionalInfo) {
+      checkGapProfileLines.push(`- 補充說明：${payload.profile.additionalInfo}`);
+    }
+
     const gapAnswerLines = payload.gapAnswers
       .map((item) => `- ${item.label}：${gapAnswerText(item.answer)}。檢查題目：${item.description}`)
       .join("\n");
@@ -445,17 +483,7 @@ app.post("/api/check-gaps", async (req, res) => {
           content: `請根據 STEP 1 基本資料、STEP 2 AI 初步分析，以及 STEP 3 保障缺口自我檢查答案，整理一份保障缺口確認摘要。
 
 使用者資料：
-- 年齡：${payload.profile.age} 歲
-- 性別：${genderText(payload.profile.gender)}
-- 婚姻狀況：${maritalStatusText(payload.profile.maritalStatus)}
-- 是否有小孩：${payload.profile.hasChildren ? "有" : "沒有"}
-- 職業：${payload.profile.occupation}
-- 年收入：新台幣 ${payload.profile.income.toLocaleString("zh-TW")} 元
-- 是否為家庭主要收入來源：${incomeRoleText(payload.profile.incomeRole)}
-- 是否有長期貸款：${longTermLoanText(payload.profile.longTermLoan)}
-- 目前每月已繳保費：${currentMonthlyPremiumText(payload.profile.currentMonthlyPremium)}
-- 自評目前保障程度：${coverageLevelText(payload.profile.coverageLevel)}
-- 補充說明：${payload.profile.additionalInfo || "未提供"}
+${checkGapProfileLines.join("\n")}
 
 STEP 2 AI 初步分析：
 ${payload.analysis}
@@ -505,6 +533,27 @@ ${gapAnswerLines}
   - 家庭責任保障：家庭責任保障不一定要追求高額度，但可以確認目前額度是否符合您的家庭責任與保費負擔。
   - 長照/失能保障：這一項常被忽略，但真正影響的是長期現金流。可以確認如果未來需要長期照顧或無法工作，目前保障能支撐多久、每月大約能提供多少。
 
+【AI 總結】
+請寫 3～5 句，建議 4 句左右。
+請綜合 STEP 1 基本資料、使用者有填的進階選項、補充說明、STEP 2 初步分析與 STEP 3 自我檢查答案，像年輕保險顧問一樣做一段白話整理。
+不要只是重複統計數字，也不要只是說「您有幾項有、幾項沒有」。
+AI 總結可以有風險意識，但請用「保障檢視」語氣，不要像在預測使用者未來一定會受傷、生病、失能或發生身故。
+請避免「很容易發生」、「高機率發生」、「一定會面臨」、「勢必造成」、「立刻影響」、「風險很高」、「很危險」這類強烈預測或恐嚇語氣。
+不要寫「您很可能會受傷」、「您未來容易生病」、「您發生意外的機率較高」、「您身故後家人會怎樣」、「一旦您失能，家裡會立刻陷入壓力」這類句子。
+請改用「可以一併確認」、「可以先檢視」、「建議先整理清楚」、「後續可以確認」、「若未來遇到相關狀況，是否有基本協助」、「主要是確認現有保障是否能對應目前責任」這類低壓力語氣。
+如果提到意外保障，請用「日常生活中若有短期醫療支出，是否有基本協助」這種檢視語氣，不要暗示使用者很可能發生意外。
+如果提到收入責任，請用「若短期收入受影響時，家庭固定支出是否有基本緩衝」這種檢視語氣，不要暗示家庭會立刻陷入壓力。
+如果提到長照/失能，請用「長照/失能屬於比較容易被忽略的長期保障方向，可以先確認目前是否已有相關安排」這種語氣，不要誇大長期現金流壓力。
+如果提到家庭責任或身故，請用「若未來遇到重大狀況，家人的生活費、房貸或教育費是否有基本緩衝」這種語氣，不要描述身故後家人會遭遇的負面情境。
+寫作邏輯請依序做到：先肯定使用者已經注意到的保障方向，再整理家庭責任、收入來源或補充資料中值得關注的地方，再用「如果未來遇到相關狀況，保障能不能協助」的語氣提醒，最後收在「先整理現有保障、額度、條款與給付方式，再決定優先順序」。
+如果補充說明有內容，請自然納入 AI 總結；如果補充說明空白，不要提到未填寫、未提供或資料不足。
+如果進階選項空白，請不要硬提未填進階資料，也不要推論主要收入來源、貸款或保費狀況不明。
+如果自我檢查有任何一項回答「有」，請先肯定使用者已經注意到的保障。
+如果四項都回答「有」，請給予最高肯定，並溫和提醒下一步重點是確認額度、條款、理賠條件與給付方式是否符合目前責任。
+如果有回答「沒有」或「不確定」，請溫和提醒這些項目值得優先確認，不要說使用者一定缺保障。
+可以引導「先整理清楚」，不要直接暗示一定要買保險或立刻補齊。
+不要輸出 Markdown 符號。
+
 【為什麼建議保單健檢】
 請短一點，用自然語氣寫：
 很多人其實有買保險，但不一定清楚每張保單是保什麼、保多少、什麼情況會賠。保單健檢不是否定原本的保險，而是先把現有保障整理清楚，避免重複花錢，也確認重要風險有沒有被照顧到。
@@ -532,13 +581,15 @@ ${gapAnswerLines}
 - 不要要求使用者準備保單年度摘要。
 - 不要要求使用者拍照保障內容頁。
 - 不要讓使用者覺得很麻煩。
+- 不要提到 coverageLevel、自評目前保障程度或目前保障程度。
 - 必須符合 ai-brain 裡「我的銷售風格.md」。`
         }
       ]
     });
 
     res.json({
-      gapAnalysis: response.output_text
+      gapAnalysis: response.output_text,
+      aiSummary: extractAiSummary(response.output_text)
     });
   } catch (error) {
     console.error("OpenAI gap check error:", error);

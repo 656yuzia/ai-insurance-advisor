@@ -17,6 +17,10 @@
   box-sizing: border-box;
 }
 
+[hidden] {
+  display: none !important;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -406,6 +410,54 @@ h1 {
   border-style: dashed;
 }
 
+.knowledge-entry {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid rgba(23, 107, 135, 0.26);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(18, 36, 52, 0.07);
+}
+
+.knowledge-entry h2 {
+  margin-bottom: 8px;
+  color: var(--primary-dark);
+  font-size: 1.25rem;
+}
+
+.knowledge-entry p:not(.eyebrow) {
+  max-width: 620px;
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+.knowledge-link,
+.back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 46px;
+  padding: 12px 18px;
+  color: #fff;
+  background: var(--primary);
+  border-radius: 8px;
+  font-weight: 900;
+  text-decoration: none;
+  white-space: nowrap;
+  transition: transform 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.knowledge-link:hover,
+.back-link:hover {
+  background: var(--primary-dark);
+  box-shadow: 0 12px 26px rgba(23, 107, 135, 0.22);
+  transform: translateY(-1px);
+}
+
 .step-section[hidden] {
   display: none;
 }
@@ -512,6 +564,92 @@ h1 {
   transform: translateY(-1px);
 }
 
+.faq-section {
+  padding: 24px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 14px 38px rgba(18, 36, 52, 0.08);
+}
+
+.faq-heading {
+  margin-bottom: 18px;
+}
+
+.faq-heading h2 {
+  margin-bottom: 8px;
+  color: var(--primary-dark);
+  font-size: 1.35rem;
+}
+
+.faq-heading p:not(.eyebrow) {
+  max-width: 740px;
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.faq-list {
+  display: grid;
+  gap: 12px;
+}
+
+.faq-item {
+  background: var(--surface-soft);
+  border: 1px solid #d8e6ec;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.faq-item summary {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  min-height: 72px;
+  padding: 20px 22px;
+  color: #263543;
+  cursor: pointer;
+  font-weight: 900;
+  line-height: 1.6;
+  list-style: none;
+}
+
+.faq-item summary::-webkit-details-marker {
+  display: none;
+}
+
+.faq-item summary::after {
+  content: "+";
+  display: inline-grid;
+  place-items: center;
+  width: 26px;
+  height: 26px;
+  margin-left: auto;
+  color: #fff;
+  background: var(--primary);
+  border-radius: 50%;
+  flex: 0 0 auto;
+  font-weight: 900;
+}
+
+.faq-item[open] summary {
+  color: var(--primary-dark);
+  background: rgba(23, 107, 135, 0.06);
+}
+
+.faq-item[open] summary::after {
+  content: "-";
+}
+
+.faq-item p {
+  margin: 0;
+  padding: 22px 24px 24px;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
 .future-step {
   display: flex;
   justify-content: space-between;
@@ -537,6 +675,77 @@ h1 {
   background: #e6edf2;
 }
 
+.knowledge-page {
+  max-width: 1040px;
+}
+
+.back-link {
+  margin-bottom: 18px;
+}
+
+.knowledge-hero {
+  padding: 30px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: var(--shadow);
+}
+
+.knowledge-hero h1 {
+  margin-bottom: 14px;
+  color: var(--primary-dark);
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
+}
+
+.knowledge-hero p:not(.eyebrow) {
+  max-width: 760px;
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.knowledge-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-top: 20px;
+}
+
+.knowledge-card {
+  padding: 22px;
+  background: #fff;
+  border: 1px solid #d8e6ec;
+  border-radius: 8px;
+  box-shadow: 0 12px 30px rgba(18, 36, 52, 0.07);
+}
+
+.knowledge-card h2 {
+  margin-bottom: 10px;
+  color: var(--primary-dark);
+  font-size: 1.22rem;
+}
+
+.knowledge-summary {
+  margin-bottom: 18px;
+  color: #263543;
+  line-height: 1.75;
+}
+
+.knowledge-card h3 {
+  margin: 16px 0 8px;
+  color: #314250;
+  font-size: 0.95rem;
+}
+
+.knowledge-card ul {
+  display: grid;
+  gap: 7px;
+  margin: 0;
+  padding-left: 1.2rem;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 @media (max-width: 760px) {
   .app-shell {
     width: min(100% - 20px, 980px);
@@ -559,6 +768,10 @@ h1 {
   }
 
   .step-card {
+    padding: 18px;
+  }
+
+  .faq-section {
     padding: 18px;
   }
 
@@ -603,7 +816,8 @@ h1 {
 
   .gap-check-form,
   .choice-group,
-  .booking-actions {
+  .booking-actions,
+  .knowledge-grid {
     grid-template-columns: 1fr;
   }
 
@@ -619,5 +833,22 @@ h1 {
   .future-step {
     align-items: flex-start;
     flex-direction: column;
+  }
+
+  .knowledge-entry {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 18px;
+  }
+
+  .knowledge-link,
+  .back-link {
+    width: 100%;
+    min-height: 52px;
+  }
+
+  .knowledge-hero,
+  .knowledge-card {
+    padding: 20px;
   }
 }

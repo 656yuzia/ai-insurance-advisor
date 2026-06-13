@@ -14,9 +14,25 @@ const gapResultSection = document.querySelector("#gapResultSection");
 const gapResultWindow = document.querySelector("#gapResultWindow");
 const summarizeGapsButton = document.querySelector("#summarizeGapsButton");
 const bookingSection = document.querySelector("#bookingSection");
+const faqSection = document.querySelector("#faqSection");
+const knowledgeEntry = document.querySelector("#knowledgeEntry");
 
 let latestProfile = null;
 let latestAnalysis = "";
+
+function hideKnowledgeEntry() {
+  if (knowledgeEntry) {
+    knowledgeEntry.hidden = true;
+  }
+}
+
+function showKnowledgeEntry() {
+  if (knowledgeEntry) {
+    knowledgeEntry.hidden = false;
+  }
+}
+
+hideKnowledgeEntry();
 
 const gapCheckItems = [
   {
@@ -76,7 +92,8 @@ function getProfile() {
 applyContactLinks();
 
 function normalizeSectionTitle(title) {
-  return title.replace(/[【】\[\]]/g, "").trim();
+  const normalizedTitle = title.replace(/[【】\[\]]/g, "").replace(/\s+/g, " ").trim();
+  return /^AI\s*總結$/.test(normalizedTitle) ? "AI 總結" : normalizedTitle;
 }
 
 function normalizeAnalysisHeadings(text) {
@@ -116,8 +133,8 @@ function parseAnalysisSections(text) {
 }
 
 function parseGapSections(text) {
-  const sectionNames = ["自我檢查摘要", "優先確認項目", "為什麼建議保單健檢", "下一步建議"];
-  const pattern = /(?:^|\n)\s*【?(自我檢查摘要|優先確認項目|為什麼建議保單健檢|下一步建議)】?\s*\n/g;
+  const sectionNames = ["自我檢查摘要", "優先確認項目", "AI 總結", "為什麼建議保單健檢", "下一步建議"];
+  const pattern = /(?:^|\n)\s*【?(自我檢查摘要|優先確認項目|AI\s*總結|為什麼建議保單健檢|下一步建議)】?\s*\n/g;
   const matches = Array.from(text.matchAll(pattern));
 
   if (matches.length === 0) {
@@ -135,6 +152,25 @@ function parseGapSections(text) {
       content: content || "目前沒有提供此段內容。"
     };
   }).sort((a, b) => sectionNames.indexOf(a.title) - sectionNames.indexOf(b.title));
+}
+
+function addAiSummarySection(sections, aiSummary) {
+  const summary = String(aiSummary || "").trim();
+
+  if (!summary || sections.some((section) => section.title === "AI 總結")) {
+    return sections;
+  }
+
+  const nextSections = [...sections];
+  const priorityIndex = nextSections.findIndex((section) => section.title === "優先確認項目");
+  const insertIndex = priorityIndex >= 0 ? priorityIndex + 1 : nextSections.findIndex((section) => section.title === "為什麼建議保單健檢");
+
+  nextSections.splice(insertIndex >= 0 ? insertIndex : nextSections.length, 0, {
+    title: "AI 總結",
+    content: summary
+  });
+
+  return nextSections;
 }
 
 function isAnalysisListLine(line) {
@@ -205,11 +241,11 @@ function renderAnalysis(text) {
   chatWindow.appendChild(grid);
 }
 
-function renderGapResult(text) {
+function renderGapResult(text, aiSummary = "") {
   const grid = document.createElement("div");
   grid.className = "analysis-grid";
 
-  parseGapSections(text).forEach((section) => {
+  addAiSummarySection(parseGapSections(text), aiSummary).forEach((section) => {
     const card = document.createElement("article");
     const title = document.createElement("h3");
     const content = renderAnalysisContent(section.content);
@@ -295,17 +331,21 @@ function setGapLoading(isLoading) {
 function resetGapFlow() {
   latestAnalysis = "";
   gapCheckForm.reset();
+  hideKnowledgeEntry();
   gapCheckSection.hidden = true;
   gapResultSection.hidden = true;
   bookingSection.hidden = true;
+  faqSection.hidden = true;
   gapResultWindow.textContent = "";
   summarizeGapsButton.disabled = true;
 }
 
 function showGapCheck() {
+  showKnowledgeEntry();
   gapCheckSection.hidden = false;
   gapResultSection.hidden = false;
   bookingSection.hidden = true;
+  faqSection.hidden = true;
   gapResultWindow.textContent = "";
   summarizeGapsButton.disabled = !isGapCheckComplete();
 }
@@ -366,7 +406,10 @@ async function requestGapSummary() {
     throw new Error(result.error || "缺口整理失敗，請稍後再試。");
   }
 
-  return result.gapAnalysis;
+  return {
+    gapAnalysis: result.gapAnalysis || "",
+    aiSummary: result.aiSummary || ""
+  };
 }
 
 advisorForm.addEventListener("submit", async (event) => {
@@ -390,6 +433,7 @@ advisorForm.addEventListener("submit", async (event) => {
     showGapCheck();
   } catch (error) {
     chatWindow.textContent = "";
+    hideKnowledgeEntry();
     renderError(error.message);
   } finally {
     setLoading(false);
@@ -399,6 +443,7 @@ advisorForm.addEventListener("submit", async (event) => {
 gapCheckForm.addEventListener("change", () => {
   summarizeGapsButton.disabled = !isGapCheckComplete();
   bookingSection.hidden = true;
+  faqSection.hidden = true;
   gapResultWindow.textContent = "";
 });
 
@@ -412,12 +457,14 @@ summarizeGapsButton.addEventListener("click", async () => {
   renderGapStatus("正在依照你的自我檢查結果，整理需要優先確認的保障...");
   setGapLoading(true);
   bookingSection.hidden = true;
+  faqSection.hidden = true;
 
   try {
     const summary = await requestGapSummary();
     gapResultWindow.textContent = "";
-    renderGapResult(summary);
+    renderGapResult(summary.gapAnalysis, summary.aiSummary);
     bookingSection.hidden = false;
+    faqSection.hidden = false;
   } catch (error) {
     gapResultWindow.textContent = "";
     renderGapError(error.message);
