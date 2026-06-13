@@ -265,10 +265,14 @@ function renderStatus(text) {
   const card = document.createElement("article");
   const title = document.createElement("h3");
   const content = document.createElement("p");
+  const dots = document.createElement("span");
 
   card.className = "analysis-section is-loading";
   title.textContent = "AI 正在分析";
   content.textContent = text;
+  dots.className = "loading-dots";
+  dots.setAttribute("aria-hidden", "true");
+  content.appendChild(dots);
 
   card.appendChild(title);
   card.appendChild(content);
@@ -279,10 +283,14 @@ function renderGapStatus(text) {
   const card = document.createElement("article");
   const title = document.createElement("h3");
   const content = document.createElement("p");
+  const dots = document.createElement("span");
 
   card.className = "analysis-section is-loading";
   title.textContent = "AI 正在整理";
   content.textContent = text;
+  dots.className = "loading-dots";
+  dots.setAttribute("aria-hidden", "true");
+  content.appendChild(dots);
 
   card.appendChild(title);
   card.appendChild(content);
@@ -422,7 +430,7 @@ advisorForm.addEventListener("submit", async (event) => {
   }
 
   chatWindow.textContent = "";
-  renderStatus("正在整理你的基本資料，請稍候...");
+  renderStatus("正在整理您的基本資料，請稍候（大約 10 秒）");
   setLoading(true);
 
   try {
@@ -454,7 +462,7 @@ summarizeGapsButton.addEventListener("click", async () => {
   }
 
   gapResultWindow.textContent = "";
-  renderGapStatus("正在依照你的自我檢查結果，整理需要優先確認的保障...");
+  renderGapStatus("正在依照您的自我檢查結果，整理需要優先確認的保障（大約 10 秒）");
   setGapLoading(true);
   bookingSection.hidden = true;
   faqSection.hidden = true;

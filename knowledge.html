@@ -8,7 +8,10 @@
 </head>
 <body>
   <main class="app-shell knowledge-page">
-    <a class="back-link" href="index.html">返回 AI 保障顧問</a>
+    <button class="back-link" id="closeKnowledgePage" type="button">關閉此頁，回到原分頁</button>
+    <p class="close-page-hint" id="closePageHint" hidden>
+      如果頁面沒有自動關閉，請直接關閉此分頁，回到原本的 AI 保障顧問頁面。
+    </p>
 
     <section class="knowledge-hero">
       <p class="eyebrow">PROTECTION GUIDE</p>
@@ -147,5 +150,20 @@
       </article>
     </section>
   </main>
+
+  <script>
+    const closeButton = document.querySelector("#closeKnowledgePage");
+    const closeHint = document.querySelector("#closePageHint");
+
+    closeButton.addEventListener("click", () => {
+      window.close();
+
+      window.setTimeout(() => {
+        if (!window.closed) {
+          closeHint.hidden = false;
+        }
+      }, 300);
+    });
+  </script>
 </body>
 </html>

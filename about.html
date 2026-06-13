@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>關於陳奕丞｜AI保障顧問</title>
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="app-shell about-page">
+    <button class="back-link" id="closeAboutPage" type="button">關閉此頁，回到原分頁</button>
+    <p class="close-page-hint" id="closePageHint" hidden>
+      如果頁面沒有自動關閉，請直接關閉此分頁，回到原本的 AI 保障顧問頁面。
+    </p>
+
+    <section class="about-hero">
+      <p class="eyebrow">ABOUT ME</p>
+      <h1>關於陳奕丞</h1>
+      <p>用 AI、資料思維與保險實務，協助您先把保障整理清楚。</p>
+    </section>
+
+    <section class="about-profile-card">
+      <div class="profile-photo-frame">
+        <img src="assets/profile.jpg" alt="陳奕丞照片" onerror="this.hidden = true">
+        <span>照片預留位置</span>
+      </div>
+
+      <div class="profile-info">
+        <p class="eyebrow">PROFILE</p>
+        <h2>陳奕丞</h2>
+        <p class="profile-role">輔仁大學統計資訊學系學生<br>南山人壽外勤業務</p>
+        <p>希望把保險討論變得更簡單、更低壓力，也更有整理感。</p>
+      </div>
+    </section>
+
+    <section class="about-card">
+      <h2>為什麼做這個網站？</h2>
+      <p>我做這個 AI 保障顧問網站，是希望讓保險討論不要一開始就充滿壓力。</p>
+      <p>很多人其實不是不想了解保險，而是不知道自己現在有哪些保障、哪些地方需要確認，也不一定知道要從哪裡開始問。</p>
+      <p>所以我嘗試用 AI 工具，把保險討論前段流程整理成幾個簡單步驟：先填寫基本資料，再由 AI 做初步分析，接著透過自我檢查整理可能需要確認的保障方向。</p>
+      <p>這個網站不是要直接告訴您一定要買什麼，也不是正式投保建議。它比較像是一個初步整理工具，幫助您先看懂目前的方向，再決定是否需要進一步保單健檢。</p>
+    </section>
+
+    <section class="about-card">
+      <h2>我可以協助您整理</h2>
+      <div class="support-grid">
+        <article class="support-card">
+          <h3>現有保單初步整理</h3>
+          <p>協助您先看懂目前有哪些保障、哪些項目需要再確認。</p>
+        </article>
+
+        <article class="support-card">
+          <h3>保障缺口方向確認</h3>
+          <p>依照家庭責任、收入來源與預算，整理比較需要優先確認的保障方向。</p>
+        </article>
+
+        <article class="support-card">
+          <h3>保費與保障順序討論</h3>
+          <p>不是一次買很多，而是先確認哪些已經有、哪些可能重複、哪些值得優先處理。</p>
+        </article>
+      </div>
+    </section>
+
+    <section class="about-card">
+      <h2>我的做法</h2>
+      <p>我希望保單健檢不是讓人有壓力的推銷，而是先把資訊整理清楚。</p>
+      <p>如果您暫時找不到保單，也可以先從記得的保障、目前保費、公司團保或家庭責任開始整理。重點不是一次做出所有決定，而是先知道自己目前在哪裡、哪些地方已經有、哪些地方還需要再確認。</p>
+    </section>
+
+    <p class="about-note">
+      以上內容僅供初步理解與討論，實際保障仍需依保單條款、額度、理賠條件與健康告知確認。
+    </p>
+  </main>
+
+  <script>
+    const closeButton = document.querySelector("#closeAboutPage");
+    const closeHint = document.querySelector("#closePageHint");
+
+    closeButton.addEventListener("click", () => {
+      window.close();
+
+      window.setTimeout(() => {
+        if (!window.closed) {
+          closeHint.hidden = false;
+        }
+      }, 300);
+    });
+  </script>
+</body>
+</html>

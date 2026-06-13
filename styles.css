@@ -38,6 +38,10 @@ textarea {
   font: inherit;
 }
 
+button {
+  border: 0;
+}
+
 .app-shell {
   width: min(980px, calc(100% - 32px));
   margin: 0 auto;
@@ -410,6 +414,35 @@ h1 {
   border-style: dashed;
 }
 
+.loading-dots::after {
+  content: "";
+  display: inline-block;
+  min-width: 1.5em;
+  animation: loadingDots 1.2s infinite steps(1, end);
+}
+
+@keyframes loadingDots {
+  0% {
+    content: "";
+  }
+
+  25% {
+    content: ".";
+  }
+
+  50% {
+    content: "..";
+  }
+
+  75% {
+    content: "...";
+  }
+
+  100% {
+    content: "";
+  }
+}
+
 .knowledge-entry {
   display: flex;
   align-items: center;
@@ -650,6 +683,31 @@ h1 {
   line-height: 1.8;
 }
 
+.about-entry-card {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 20px 22px;
+  background: #fff;
+  border: 1px solid rgba(23, 107, 135, 0.26);
+  border-radius: 8px;
+  box-shadow: 0 10px 28px rgba(18, 36, 52, 0.07);
+}
+
+.about-entry-card h3 {
+  margin-bottom: 8px;
+  color: var(--primary-dark);
+  font-size: 1.18rem;
+}
+
+.about-entry-card p:not(.eyebrow) {
+  max-width: 620px;
+  margin-bottom: 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
 .future-step {
   display: flex;
   justify-content: space-between;
@@ -681,6 +739,13 @@ h1 {
 
 .back-link {
   margin-bottom: 18px;
+  cursor: pointer;
+}
+
+.close-page-hint {
+  margin: -6px 0 18px;
+  color: var(--muted);
+  line-height: 1.7;
 }
 
 .knowledge-hero {
@@ -744,6 +809,131 @@ h1 {
   padding-left: 1.2rem;
   color: var(--muted);
   line-height: 1.7;
+}
+
+.about-page {
+  max-width: 1040px;
+}
+
+.about-hero,
+.about-profile-card,
+.about-card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  box-shadow: 0 14px 38px rgba(18, 36, 52, 0.08);
+}
+
+.about-hero {
+  padding: 30px;
+}
+
+.about-hero h1 {
+  margin-bottom: 14px;
+  color: var(--primary-dark);
+  font-size: clamp(2.1rem, 4vw, 3.4rem);
+}
+
+.about-hero p:not(.eyebrow),
+.about-card p,
+.profile-info p,
+.support-card p {
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.about-profile-card {
+  display: grid;
+  grid-template-columns: minmax(220px, 320px) 1fr;
+  gap: 24px;
+  align-items: center;
+  margin-top: 20px;
+  padding: 24px;
+}
+
+.profile-photo-frame {
+  position: relative;
+  display: grid;
+  place-items: center;
+  min-height: 320px;
+  background:
+    linear-gradient(135deg, rgba(23, 107, 135, 0.1), rgba(196, 154, 74, 0.08)),
+    var(--surface-soft);
+  border: 1px dashed #bfd0da;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.profile-photo-frame img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.profile-photo-frame span {
+  z-index: 1;
+  color: var(--muted);
+  font-weight: 900;
+}
+
+.profile-photo-frame img:not([src]),
+.profile-photo-frame img[src=""] {
+  display: none;
+}
+
+.profile-info h2,
+.about-card h2 {
+  margin-bottom: 12px;
+  color: var(--primary-dark);
+  font-size: 1.45rem;
+}
+
+.profile-role {
+  margin-bottom: 16px;
+  color: #314250;
+  font-weight: 900;
+}
+
+.about-card {
+  margin-top: 20px;
+  padding: 24px;
+}
+
+.about-card p:last-child,
+.support-card p:last-child {
+  margin-bottom: 0;
+}
+
+.support-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 14px;
+  margin-top: 16px;
+}
+
+.support-card {
+  padding: 18px;
+  background: var(--surface-soft);
+  border: 1px solid #d8e6ec;
+  border-radius: 8px;
+}
+
+.support-card h3 {
+  margin-bottom: 10px;
+  color: #263543;
+  font-size: 1rem;
+}
+
+.about-note {
+  margin: 20px 0 0;
+  padding: 18px 20px;
+  color: var(--muted);
+  background: rgba(255, 255, 255, 0.72);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  line-height: 1.8;
 }
 
 @media (max-width: 760px) {
@@ -841,6 +1031,12 @@ h1 {
     padding: 18px;
   }
 
+  .about-entry-card {
+    align-items: stretch;
+    flex-direction: column;
+    padding: 18px;
+  }
+
   .knowledge-link,
   .back-link {
     width: 100%;
@@ -850,5 +1046,20 @@ h1 {
   .knowledge-hero,
   .knowledge-card {
     padding: 20px;
+  }
+
+  .about-hero,
+  .about-profile-card,
+  .about-card {
+    padding: 20px;
+  }
+
+  .about-profile-card,
+  .support-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .profile-photo-frame {
+    min-height: 260px;
   }
 }
