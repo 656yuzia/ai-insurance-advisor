@@ -79,26 +79,40 @@ function normalizeSectionTitle(title) {
   return title.replace(/[【】\[\]]/g, "").trim();
 }
 
+function normalizeAnalysisHeadings(text) {
+  return String(text)
+    .replace(/【\s*(人生階段|主要風險|優先確認的保障|重要提醒)\s*】\s*/g, "\n【$1】\n")
+    .trim();
+}
+
 function parseAnalysisSections(text) {
-  const sectionNames = ["人生階段", "主要風險", "保障缺口", "建議保障方向", "提醒"];
-  const pattern = /(?:^|\n)\s*【?(人生階段|主要風險|保障缺口|建議保障方向|提醒)】?\s*\n/g;
-  const matches = Array.from(text.matchAll(pattern));
+  const sectionNames = ["人生階段", "主要風險", "優先確認的保障", "重要提醒"];
+  const normalizedText = normalizeAnalysisHeadings(text);
+  const pattern = /^\s*【?(人生階段|主要風險|優先確認的保障|重要提醒)】?\s*$/gm;
+  const matches = Array.from(normalizedText.matchAll(pattern));
 
   if (matches.length === 0) {
-    return [{ title: "AI 初步分析", content: text }];
+    console.warn("STEP 2 缺少人生階段區塊");
+    return [{ title: "AI 初步保障分析", content: text }];
   }
 
-  return matches.map((match, index) => {
+  const sections = matches.map((match, index) => {
     const title = normalizeSectionTitle(match[1]);
     const start = match.index + match[0].length;
-    const end = matches[index + 1] ? matches[index + 1].index : text.length;
-    const content = text.slice(start, end).trim();
+    const end = matches[index + 1] ? matches[index + 1].index : normalizedText.length;
+    const content = normalizedText.slice(start, end).trim();
 
     return {
       title,
       content: content || "目前沒有提供此段內容。"
     };
   }).sort((a, b) => sectionNames.indexOf(a.title) - sectionNames.indexOf(b.title));
+
+  if (!sections.some((section) => section.title === "人生階段")) {
+    console.warn("STEP 2 缺少人生階段區塊");
+  }
+
+  return sections;
 }
 
 function parseGapSections(text) {
@@ -123,6 +137,54 @@ function parseGapSections(text) {
   }).sort((a, b) => sectionNames.indexOf(a.title) - sectionNames.indexOf(b.title));
 }
 
+function isAnalysisListLine(line) {
+  return /^(\d+[.．、]|[-•])\s+/.test(line.trim());
+}
+
+function appendAnalysisBlock(container, lines, className) {
+  if (lines.length === 0) {
+    return;
+  }
+
+  const block = document.createElement("div");
+  block.className = className;
+  block.textContent = lines.join("\n");
+  container.appendChild(block);
+}
+
+function renderAnalysisContent(text) {
+  const container = document.createElement("div");
+  container.className = "analysis-content";
+
+  const lines = String(text).split(/\r?\n/);
+  let currentLines = [];
+  let currentType = "paragraph";
+
+  lines.forEach((line) => {
+    const trimmedLine = line.trim();
+
+    if (!trimmedLine) {
+      appendAnalysisBlock(container, currentLines, currentType === "list" ? "analysis-list-item" : "analysis-paragraph");
+      currentLines = [];
+      currentType = "paragraph";
+      return;
+    }
+
+    if (isAnalysisListLine(trimmedLine)) {
+      appendAnalysisBlock(container, currentLines, currentType === "list" ? "analysis-list-item" : "analysis-paragraph");
+      currentLines = [trimmedLine];
+      currentType = "list";
+      return;
+    }
+
+    currentLines.push(trimmedLine);
+  });
+
+  appendAnalysisBlock(container, currentLines, currentType === "list" ? "analysis-list-item" : "analysis-paragraph");
+
+  return container;
+}
+
 function renderAnalysis(text) {
   const grid = document.createElement("div");
   grid.className = "analysis-grid";
@@ -130,11 +192,10 @@ function renderAnalysis(text) {
   parseAnalysisSections(text).forEach((section) => {
     const card = document.createElement("article");
     const title = document.createElement("h3");
-    const content = document.createElement("p");
+    const content = renderAnalysisContent(section.content);
 
     card.className = "analysis-section";
     title.textContent = section.title;
-    content.textContent = section.content;
 
     card.appendChild(title);
     card.appendChild(content);
@@ -151,11 +212,10 @@ function renderGapResult(text) {
   parseGapSections(text).forEach((section) => {
     const card = document.createElement("article");
     const title = document.createElement("h3");
-    const content = document.createElement("p");
+    const content = renderAnalysisContent(section.content);
 
     card.className = "analysis-section";
     title.textContent = section.title;
-    content.textContent = section.content;
 
     card.appendChild(title);
     card.appendChild(content);

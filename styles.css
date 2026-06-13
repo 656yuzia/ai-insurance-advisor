@@ -382,6 +382,26 @@ h1 {
   white-space: pre-line;
 }
 
+.analysis-content {
+  color: #263543;
+  line-height: 1.8;
+}
+
+.analysis-paragraph,
+.analysis-list-item {
+  white-space: pre-line;
+}
+
+.analysis-paragraph + .analysis-paragraph,
+.analysis-paragraph + .analysis-list-item,
+.analysis-list-item + .analysis-paragraph {
+  margin-top: 14px;
+}
+
+.analysis-list-item + .analysis-list-item {
+  margin-top: 18px;
+}
+
 .analysis-section.is-loading {
   border-style: dashed;
 }
