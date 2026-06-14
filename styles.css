@@ -745,31 +745,6 @@ h1 {
   }
 }
 
-.knowledge-entry {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 18px;
-  padding: 22px 24px;
-  background: #fff;
-  border: 1px solid rgba(23, 107, 135, 0.26);
-  border-radius: 14px;
-  box-shadow: var(--shadow-soft);
-}
-
-.knowledge-entry h2 {
-  margin-bottom: 8px;
-  color: var(--primary-dark);
-  font-size: 1.25rem;
-}
-
-.knowledge-entry p:not(.eyebrow) {
-  max-width: 620px;
-  margin-bottom: 0;
-  color: var(--muted);
-  line-height: 1.7;
-}
-
 .knowledge-link,
 .back-link {
   display: inline-flex;
@@ -1416,12 +1391,6 @@ h1 {
   .future-step {
     align-items: flex-start;
     flex-direction: column;
-  }
-
-  .knowledge-entry {
-    align-items: stretch;
-    flex-direction: column;
-    padding: 20px;
   }
 
   .about-entry-card {

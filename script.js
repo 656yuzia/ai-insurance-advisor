@@ -15,26 +15,11 @@ const gapResultWindow = document.querySelector("#gapResultWindow");
 const summarizeGapsButton = document.querySelector("#summarizeGapsButton");
 const bookingSection = document.querySelector("#bookingSection");
 const faqSection = document.querySelector("#faqSection");
-const knowledgeEntry = document.querySelector("#knowledgeEntry");
 const mainFlow = document.querySelector("#mainFlow");
 const revealFlowButton = document.querySelector("#revealFlowButton");
 
 let latestProfile = null;
 let latestAnalysis = "";
-
-function hideKnowledgeEntry() {
-  if (knowledgeEntry) {
-    knowledgeEntry.hidden = true;
-  }
-}
-
-function showKnowledgeEntry() {
-  if (knowledgeEntry) {
-    knowledgeEntry.hidden = false;
-  }
-}
-
-hideKnowledgeEntry();
 
 function revealMainFlow() {
   if (mainFlow) {
@@ -356,7 +341,6 @@ function setGapLoading(isLoading) {
 function resetGapFlow() {
   latestAnalysis = "";
   gapCheckForm.reset();
-  hideKnowledgeEntry();
   gapCheckSection.hidden = true;
   gapResultSection.hidden = true;
   bookingSection.hidden = true;
@@ -366,7 +350,6 @@ function resetGapFlow() {
 }
 
 function showGapCheck() {
-  showKnowledgeEntry();
   gapCheckSection.hidden = false;
   gapResultSection.hidden = false;
   bookingSection.hidden = true;
@@ -458,7 +441,6 @@ advisorForm.addEventListener("submit", async (event) => {
     showGapCheck();
   } catch (error) {
     chatWindow.textContent = "";
-    hideKnowledgeEntry();
     renderError(error.message);
   } finally {
     setLoading(false);
