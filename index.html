@@ -10,20 +10,33 @@
   <main class="app-shell">
     <section class="hero">
       <div class="hero-copy">
-        <p class="eyebrow">AI PROTECTION ADVISOR BY 陳奕丞</p>
+        <p class="eyebrow">AI PROTECTION ADVISOR</p>
         <h1>AI保障顧問</h1>
-        <p class="intro">免費初步保障分析</p>
+        <p class="hero-kicker">免費初步保障分析</p>
+        <div class="hero-actions">
+          <button class="hero-button hero-button-primary" id="revealFlowButton" type="button">輸入基本資料，開始分析</button>
+          <a class="hero-button hero-button-secondary" href="knowledge.html" target="_blank" rel="noopener noreferrer">保障小百科</a>
+          <a class="hero-button hero-button-secondary" href="about.html" target="_blank" rel="noopener noreferrer">關於作者</a>
+        </div>
       </div>
       <div class="hero-status" aria-label="AI 顧問狀態">
         <span class="status-dot"></span>
         <div>
           <strong>已串接 GPT API</strong>
-          <p>資料只用於本次 AI 初步分析，不會公開，也不代表正式投保建議</p>
+          <p>透過基本資料與自我檢查結果，協助您初步整理人生階段、主要風險與需要確認的保障重點。</p>
         </div>
       </div>
     </section>
 
-    <section class="flow" aria-label="AI 保障顧問流程">
+    <section class="flow" id="mainFlow" aria-label="AI 保障顧問流程" hidden>
+      <div class="flow-ribbon" aria-label="流程提示">
+        <span>填資料</span>
+        <span>AI 分析</span>
+        <span>自我檢查</span>
+        <span>缺口整理</span>
+        <span>預約</span>
+      </div>
+
       <form class="flow-card step-card is-active" id="advisorForm">
         <div class="step-header">
           <div>
@@ -33,94 +46,122 @@
           <span class="step-badge">現在</span>
         </div>
 
-        <div class="form-grid">
-          <label class="field">
-            <span>年齡</span>
-            <input type="number" id="age" min="18" max="90" value="35" required>
-          </label>
+        <div class="step-one-workspace">
+          <div class="step-one-inputs">
+            <section class="form-group-card" aria-label="基本狀況">
+              <div class="form-group-heading">
+                <p class="eyebrow">基本狀況</p>
+              </div>
 
-          <label class="field">
-            <span>婚姻狀況</span>
-            <select id="maritalStatus" required>
-              <option value="single">未婚</option>
-              <option value="married" selected>已婚</option>
-              <option value="other">其他</option>
-            </select>
-          </label>
+              <div class="form-grid">
+                <label class="field">
+                  <span>年齡</span>
+                  <input type="number" id="age" min="18" max="90" value="35" required>
+                </label>
 
-          <label class="field">
-            <span>是否有小孩</span>
-            <select id="hasChildren" required>
-              <option value="yes" selected>是</option>
-              <option value="no">否</option>
-            </select>
-          </label>
+                <label class="field">
+                  <span>婚姻狀況</span>
+                  <select id="maritalStatus" required>
+                    <option value="single">未婚</option>
+                    <option value="married" selected>已婚</option>
+                    <option value="other">其他</option>
+                  </select>
+                </label>
 
-          <label class="field">
-            <span>職業</span>
-            <input type="text" id="occupation" placeholder="例如：工程師、老師、護理師、自營商、學生" required>
-          </label>
+                <label class="field">
+                  <span>是否有小孩</span>
+                  <select id="hasChildren" required>
+                    <option value="yes" selected>是</option>
+                    <option value="no">否</option>
+                  </select>
+                </label>
 
-          <label class="field">
-            <span>年收入</span>
-            <input type="number" id="income" min="0" step="10000" value="800000" required>
-          </label>
-        </div>
+                <label class="field">
+                  <span>職業</span>
+                  <input type="text" id="occupation" placeholder="例如：工程師、老師、護理師、自營商、學生" required>
+                </label>
 
-        <details class="advanced-panel">
-          <summary>
-            <div>
-              <span>進階資料（選填）</span>
-              <br>
-              <small>讓 AI 分析更貼近您的真實情況</small>
-            </div>
-          </summary>
+                <label class="field">
+                  <span>年收入</span>
+                  <input type="number" id="income" min="0" step="10000" value="800000" required>
+                </label>
+              </div>
+            </section>
 
-          <div class="form-grid advanced-grid">
-            <label class="field">
-              <span>是否為家庭主要收入來源</span>
-              <select id="incomeRole">
-                <option value="" selected>可略過</option>
-                <option value="primary">是</option>
-                <option value="not_primary">否</option>
-                <option value="shared">共同負擔</option>
-              </select>
-            </label>
+            <details class="advanced-panel">
+              <summary>
+                <div>
+                  <span>進階資料（選填）</span>
+                  <br>
+                  <small>讓 AI 分析更貼近您的真實情況</small>
+                </div>
+              </summary>
 
-            <label class="field">
-              <span>是否有長期貸款</span>
-              <select id="longTermLoan">
-                <option value="" selected>可略過</option>
-                <option value="none">無</option>
-                <option value="mortgage">房貸</option>
-                <option value="car_loan">車貸</option>
-                <option value="mortgage_and_car_loan">房貸＋車貸</option>
-                <option value="other">其他</option>
-              </select>
-            </label>
+              <div class="form-grid advanced-grid">
+                <label class="field">
+                  <span>是否為家庭主要收入來源</span>
+                  <select id="incomeRole">
+                    <option value="" selected>可略過</option>
+                    <option value="primary">是</option>
+                    <option value="not_primary">否</option>
+                    <option value="shared">共同負擔</option>
+                  </select>
+                </label>
 
-            <label class="field">
-              <span>目前每月已繳保費</span>
-              <select id="premiumBudget">
-                <option value="" selected>可略過</option>
-                <option value="under_2000">2000元以下</option>
-                <option value="2000_4000">2000～4000元</option>
-                <option value="4000_6000">4000～6000元</option>
-                <option value="over_6000">6000元以上</option>
-              </select>
-            </label>
+                <label class="field">
+                  <span>是否有長期貸款</span>
+                  <select id="longTermLoan">
+                    <option value="" selected>可略過</option>
+                    <option value="none">無</option>
+                    <option value="mortgage">房貸</option>
+                    <option value="car_loan">車貸</option>
+                    <option value="mortgage_and_car_loan">房貸＋車貸</option>
+                    <option value="other">其他</option>
+                  </select>
+                </label>
 
-            <label class="field field-wide">
-              <span>補充說明</span>
-              <textarea id="additionalInfo" rows="6" placeholder="請補充任何你認為重要的資訊，例如：
+                <label class="field">
+                  <span>目前每月已繳保費</span>
+                  <select id="premiumBudget">
+                    <option value="" selected>可略過</option>
+                    <option value="under_2000">2000元以下</option>
+                    <option value="2000_4000">2000～4000元</option>
+                    <option value="4000_6000">4000～6000元</option>
+                    <option value="over_6000">6000元以上</option>
+                  </select>
+                </label>
+              </div>
+            </details>
+
+            <section class="form-group-card" aria-label="補充說明">
+              <div class="form-group-heading">
+                <p class="eyebrow">補充說明</p>
+              </div>
+
+              <label class="field field-wide">
+                <span>補充說明</span>
+                <textarea id="additionalInfo" rows="6" placeholder="請補充任何您認為重要的資訊，例如：
 家庭狀況、房貸壓力、未來規劃、創業、準備結婚、準備生小孩、想特別了解的保障。
 
-填得越完整，AI 分析會越貼近你的情況。"></textarea>
-            </label>
-          </div>
-        </details>
+填得越完整，AI 分析會越貼近您的情況。"></textarea>
+              </label>
+            </section>
 
-        <button class="primary-button" type="submit">開始分析</button>
+            <button class="primary-button" type="submit">開始分析</button>
+          </div>
+
+          <aside class="ai-helper-card" aria-label="AI 會整理什麼">
+            <p class="eyebrow">AI 會整理什麼</p>
+            <h3>填完後，AI 會協助整理</h3>
+            <ul>
+              <li>目前人生階段</li>
+              <li>主要需要確認的風險</li>
+              <li>優先確認的保障方向</li>
+              <li>是否需要進一步保單健檢</li>
+            </ul>
+            <p>資料只用於本次初步分析，不代表正式投保建議。</p>
+          </aside>
+        </div>
       </form>
 
       <section class="flow-card step-card result-card" aria-label="AI 初步分析">
@@ -233,16 +274,12 @@
         </div>
 
         <p class="step-description">
-          AI 可以協助您做初步整理，但真正的保單內容仍需要逐項確認。如果您不確定自己目前有哪些保障，或想知道現有保單是否真的補到風險缺口，可以預約陳奕丞協助您做保單健檢，健檢完免費附上一份詳細的數位報告，並由真人親自解說。
+          如果您想把目前保障整理得更清楚，可以預約一次保單健檢。
+          <br>
+          奕丞可以協助您從現有保單、公司團保或目前保費狀況開始整理，先確認哪些已經有、哪些不確定、哪些項目需要再看清楚。
         </p>
 
         <div class="booking-actions">
-          <a class="booking-link" data-contact-link="line" href="https://line.me/R/ti/p/@your-line-id" target="_blank" rel="noopener noreferrer">
-            <span>LINE 諮詢</span>
-          </a>
-          <a class="booking-link" data-contact-link="instagram" href="https://www.instagram.com/your-instagram" target="_blank" rel="noopener noreferrer">
-            <span>Instagram</span>
-          </a>
           <a class="booking-link" data-contact-link="booking" href="https://forms.gle/your-form-link" target="_blank" rel="noopener noreferrer">
             <span>預約保單健檢</span>
           </a>
@@ -287,13 +324,9 @@
             <p>如果方便，可以先準備現有保單、保單年度摘要、公司團保資料，或大概列出目前每月繳多少保費。若暫時找不到，也可以先預約，之後再一起整理。</p>
           </details>
 
-          <article class="about-entry-card">
-            <div>
-              <p class="eyebrow">關於奕丞</p>
-              <h3>想先認識協助您整理保障的人嗎？</h3>
-              <p>這個網站是由陳奕丞製作，希望用比較低壓力的方式，幫您先整理保障方向與需要確認的重點。</p>
-            </div>
-            <a class="knowledge-link" href="about.html" target="_blank" rel="noopener noreferrer">認識奕丞</a>
+          <article class="site-disclaimer">
+            <h3>網站使用提醒</h3>
+            <p>本網站為個人製作之 AI 初步保障整理工具，內容僅供保障觀念整理與討論參考，並非保險公司官方網站、正式投保建議或保險商品銷售招攬廣告。實際保障內容、投保條件與理賠結果仍需依各保險契約條款、核保結果及相關法令規定為準。</p>
           </article>
         </div>
       </section>

@@ -16,6 +16,8 @@ const summarizeGapsButton = document.querySelector("#summarizeGapsButton");
 const bookingSection = document.querySelector("#bookingSection");
 const faqSection = document.querySelector("#faqSection");
 const knowledgeEntry = document.querySelector("#knowledgeEntry");
+const mainFlow = document.querySelector("#mainFlow");
+const revealFlowButton = document.querySelector("#revealFlowButton");
 
 let latestProfile = null;
 let latestAnalysis = "";
@@ -33,6 +35,21 @@ function showKnowledgeEntry() {
 }
 
 hideKnowledgeEntry();
+
+function revealMainFlow() {
+  if (mainFlow) {
+    mainFlow.hidden = false;
+  }
+
+  advisorForm.scrollIntoView({
+    behavior: "smooth",
+    block: "start"
+  });
+}
+
+if (revealFlowButton) {
+  revealFlowButton.addEventListener("click", revealMainFlow);
+}
 
 const gapCheckItems = [
   {
