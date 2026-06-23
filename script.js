@@ -4,6 +4,9 @@ const contactLinks = {
   instagram: "https://www.instagram.com/yuzia_656?igsh=MW9yNWtyNTdkb3l3bg%3D%3D&utm_source=qr",
   booking: "https://line.me/ti/p/-IWbb93IQv"
 };
+const fixedGapNextStepContent = `會建議保單健檢，是因為現有保障是否真的符合目前需求，通常需要一起看額度、條款與給付方式。
+
+很多人其實有買保險，但不一定清楚每張保單是保什麼、保多少、什麼情況會賠。保單健檢不是否定原本的保險，而是先把現有保障整理清楚，避免重複花錢，也確認重要風險有沒有被照顧到。`;
 
 const advisorForm = document.querySelector("#advisorForm");
 const chatWindow = document.querySelector("#chatWindow");
@@ -105,7 +108,7 @@ function normalizeAnalysisHeadings(text) {
 }
 
 function parseAnalysisSections(text) {
-  const sectionNames = ["人生階段", "主要風險", "優先確認的保障", "重要提醒"];
+  const sectionNames = ["人生階段", "主要風險"];
   const normalizedText = normalizeAnalysisHeadings(text);
   const pattern = /^\s*【?(人生階段|主要風險|優先確認的保障|重要提醒)】?\s*$/gm;
   const matches = Array.from(normalizedText.matchAll(pattern));
@@ -125,7 +128,9 @@ function parseAnalysisSections(text) {
       title,
       content: content || "目前沒有提供此段內容。"
     };
-  }).sort((a, b) => sectionNames.indexOf(a.title) - sectionNames.indexOf(b.title));
+  })
+    .filter((section) => sectionNames.includes(section.title))
+    .sort((a, b) => sectionNames.indexOf(a.title) - sectionNames.indexOf(b.title));
 
   if (!sections.some((section) => section.title === "人生階段")) {
     console.warn("STEP 2 缺少人生階段區塊");
@@ -135,15 +140,15 @@ function parseAnalysisSections(text) {
 }
 
 function parseGapSections(text) {
-  const sectionNames = ["自我檢查摘要", "優先確認項目", "AI 總結", "為什麼建議保單健檢", "下一步建議"];
-  const pattern = /(?:^|\n)\s*【?(自我檢查摘要|優先確認項目|AI\s*總結|為什麼建議保單健檢|下一步建議)】?\s*\n/g;
+  const sectionNames = ["自我檢查摘要", "優先確認項目", "AI 總結"];
+  const pattern = /(?:^|\n)\s*【?(自我檢查摘要|優先確認項目|AI\s*總結|為什麼建議保單健檢|下一步建議：保單健檢|下一步建議)】?\s*\n/g;
   const matches = Array.from(text.matchAll(pattern));
 
   if (matches.length === 0) {
     return [{ title: "AI 整理缺口結果", content: text }];
   }
 
-  return matches.map((match, index) => {
+  const parsedSections = matches.map((match, index) => {
     const title = normalizeSectionTitle(match[1]);
     const start = match.index + match[0].length;
     const end = matches[index + 1] ? matches[index + 1].index : text.length;
@@ -153,7 +158,10 @@ function parseGapSections(text) {
       title,
       content: content || "目前沒有提供此段內容。"
     };
-  }).sort((a, b) => sectionNames.indexOf(a.title) - sectionNames.indexOf(b.title));
+  });
+  const sections = parsedSections.filter((section) => sectionNames.includes(section.title));
+
+  return sections.sort((a, b) => sectionNames.indexOf(a.title) - sectionNames.indexOf(b.title));
 }
 
 function addAiSummarySection(sections, aiSummary) {
@@ -165,7 +173,7 @@ function addAiSummarySection(sections, aiSummary) {
 
   const nextSections = [...sections];
   const priorityIndex = nextSections.findIndex((section) => section.title === "優先確認項目");
-  const insertIndex = priorityIndex >= 0 ? priorityIndex + 1 : nextSections.findIndex((section) => section.title === "為什麼建議保單健檢");
+  const insertIndex = priorityIndex >= 0 ? priorityIndex + 1 : nextSections.length;
 
   nextSections.splice(insertIndex >= 0 ? insertIndex : nextSections.length, 0, {
     title: "AI 總結",
@@ -246,8 +254,14 @@ function renderAnalysis(text) {
 function renderGapResult(text, aiSummary = "") {
   const grid = document.createElement("div");
   grid.className = "analysis-grid";
+  const sections = addAiSummarySection(parseGapSections(text), aiSummary);
 
-  addAiSummarySection(parseGapSections(text), aiSummary).forEach((section) => {
+  sections.push({
+    title: "下一步建議：保單健檢",
+    content: fixedGapNextStepContent
+  });
+
+  sections.forEach((section) => {
     const card = document.createElement("article");
     const title = document.createElement("h3");
     const content = renderAnalysisContent(section.content);
