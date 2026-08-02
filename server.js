@@ -7,13 +7,143 @@ const app = express();
 const port = process.env.PORT || 3000;
 const brainDir = path.join(__dirname, "ai-brain");
 const styleGuideFileName = "我的銷售風格.md";
+const apiWindowMs = readPositiveInteger(process.env.API_RATE_LIMIT_WINDOW_MS, 15 * 60 * 1000);
+const apiMaxRequestsPerWindow = readPositiveInteger(process.env.API_RATE_LIMIT_MAX, 8);
+const apiDailyMaxRequestsPerIp = readPositiveInteger(process.env.API_DAILY_LIMIT_PER_IP, 24);
+const apiDailyMaxRequestsGlobal = readPositiveInteger(process.env.API_DAILY_LIMIT_GLOBAL, 120);
+const rateLimitBuckets = new Map();
+const dailyUsage = {
+  dayKey: getTaipeiDateKey(),
+  global: 0,
+  byIp: new Map()
+};
 
-app.use(express.json());
+app.set("trust proxy", 1);
+app.use(express.json({ limit: "12kb" }));
+app.use(handleJsonParseError);
 
 // ai-brain 只作為後端知識庫，不透過靜態網站公開。
 app.use("/ai-brain", (req, res) => {
   res.sendStatus(404);
 });
+
+app.use("/api", enforceSameOrigin, enforceApiBudget);
+
+function readPositiveInteger(value, fallback) {
+  const parsedValue = Number(value);
+
+  return Number.isInteger(parsedValue) && parsedValue > 0 ? parsedValue : fallback;
+}
+
+function getTaipeiDateKey(now = new Date()) {
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Taipei",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit"
+  }).format(now);
+}
+
+function getClientIp(req) {
+  const forwardedFor = String(req.headers["x-forwarded-for"] || "")
+    .split(",")
+    .map((value) => value.trim())
+    .filter(Boolean);
+
+  return forwardedFor[0] || req.ip || req.socket.remoteAddress || "unknown";
+}
+
+function getAllowedOrigins(req) {
+  const configuredOrigins = String(process.env.ALLOWED_ORIGINS || "")
+    .split(",")
+    .map((origin) => origin.trim())
+    .filter(Boolean);
+  const currentOrigin = req.headers.host ? `${req.protocol}://${req.headers.host}` : "";
+
+  return new Set([currentOrigin, ...configuredOrigins].filter(Boolean));
+}
+
+function enforceSameOrigin(req, res, next) {
+  const origin = req.headers.origin;
+
+  if (!origin || getAllowedOrigins(req).has(origin)) {
+    return next();
+  }
+
+  return res.status(403).json({
+    error: "此請求來源不被允許，請回到原網站重新操作。"
+  });
+}
+
+function resetDailyUsageIfNeeded() {
+  const currentDayKey = getTaipeiDateKey();
+
+  if (dailyUsage.dayKey === currentDayKey) {
+    return;
+  }
+
+  dailyUsage.dayKey = currentDayKey;
+  dailyUsage.global = 0;
+  dailyUsage.byIp.clear();
+}
+
+function enforceApiBudget(req, res, next) {
+  resetDailyUsageIfNeeded();
+
+  const now = Date.now();
+  const clientIp = getClientIp(req);
+  const bucket = rateLimitBuckets.get(clientIp) || {
+    windowStart: now,
+    count: 0
+  };
+
+  if (now - bucket.windowStart >= apiWindowMs) {
+    bucket.windowStart = now;
+    bucket.count = 0;
+  }
+
+  bucket.count += 1;
+  rateLimitBuckets.set(clientIp, bucket);
+
+  if (bucket.count > apiMaxRequestsPerWindow) {
+    return res.status(429).json({
+      error: "目前使用人數較多，請稍後再試。"
+    });
+  }
+
+  const currentDailyIpCount = dailyUsage.byIp.get(clientIp) || 0;
+
+  if (currentDailyIpCount >= apiDailyMaxRequestsPerIp || dailyUsage.global >= apiDailyMaxRequestsGlobal) {
+    return res.status(429).json({
+      error: "今日 AI 分析額度已達上限，請明天再試。"
+    });
+  }
+
+  dailyUsage.byIp.set(clientIp, currentDailyIpCount + 1);
+  dailyUsage.global += 1;
+
+  return next();
+}
+
+function handleJsonParseError(error, req, res, next) {
+  if (!error) {
+    return next();
+  }
+
+  if (error.type === "entity.too.large") {
+    return res.status(413).json({
+      error: "送出的資料太多，請縮短補充說明後再試。"
+    });
+  }
+
+  if (error instanceof SyntaxError && "body" in error) {
+    return res.status(400).json({
+      error: "送出的資料格式不正確，請重新整理頁面後再試。"
+    });
+  }
+
+  return next(error);
+}
 
 function normalizeProfile(profile) {
   return {
